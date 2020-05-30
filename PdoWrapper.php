@@ -1,17 +1,19 @@
 <?php
 
 namespace domainsReseller\module;
+
 use Illuminate\Database\Capsule\Manager as DB;
 
 class PdoWrapper
 {
-    public static function query($query, $params = array())
+    public static function query($query, $params = [])
     {
         $statement = DB::connection()
                 ->getPdo()
                 ->prepare($query);
 
         $statement->execute($params);
+
         return $statement;
     }
 
@@ -22,7 +24,7 @@ class PdoWrapper
 
     public static function fetchAssoc($query)
     {
-            return $query->fetch(\PDO::FETCH_ASSOC);
+        return $query->fetch(\PDO::FETCH_ASSOC);
     }
 
     public static function fetchArray($query)
@@ -38,6 +40,7 @@ class PdoWrapper
     public static function numRows($query)
     {
         $query->fetch(\PDO::FETCH_BOTH);
+
         return $query->rowCount();
     }
 
@@ -59,13 +62,14 @@ class PdoWrapper
             foreach ($params as &$v) {
                 $v = self::realEscapeString($v);
             }
-            $query = vsprintf(str_replace("?", "'%s'", $query), $params);
+            $query = vsprintf(str_replace('?', "'%s'", $query), $params);
         }
-        
+
         return self::query($query);
     }
-    
-    public static function getError(\PDOStatement $query){
+
+    public static function getError(\PDOStatement $query)
+    {
         return $query->errorInfo();
     }
 }
